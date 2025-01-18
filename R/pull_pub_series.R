@@ -9,6 +9,8 @@
 #' @export
 pull_pub_meta <- function(pub_file) {
   
+  numeric_fields <- c("freq", "item", "unit_mult", "order")
+  
   pub <- xml2::read_xml(pub_file)
   series_nodes <- xml2::xml_find_all(pub, "//kf:Series")
   
@@ -29,7 +31,8 @@ pull_pub_meta <- function(pub_file) {
   names(attrs_list) <- tolower(attr_names)
 
   pub_meta <- bind_rows(attrs_list) %>%
-    mutate(order = seq_along(series_name))
+    mutate(order = seq_along(series_name)) %>%
+    mutate(across(all_of(numeric_fields), ~ as.numeric(.)))
 
   return(pub_meta)
 }
@@ -96,7 +99,7 @@ pull_single_pub_series <- function(series_id, pub_file) {
 #'
 #' @param pub_file string; the pub filepath
 #'
-#' Dependencies: dplyr, tidyr, xml2, stringr, purrr
+#' Dependencies: dplyr, tidyr, xml2, stringr
 #'
 #' @returns a list of dfs
 pull_pub_vals <- function(pub_file) {
@@ -198,7 +201,7 @@ pull_pub_vals <- function(pub_file) {
 #'
 #' @param pub_file string; the pub filepath
 #'
-#' Dependencies: dplyr, tidyr, xml2, stringr, purrr
+#' Dependencies: dplyr, tidyr, xml2, stringr
 #'
 #' @returns a list of series names dfs
 pull_series_names <- function(pub_file) {

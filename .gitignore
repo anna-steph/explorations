@@ -7,6 +7,7 @@
 *.sqlite3
 *.xml
 *.zip
+*.feather
 
 Rlibrary/
 working/
