@@ -7,6 +7,8 @@ download_path <- "[path]"
 
 time_start <- Sys.time()
 
+options(scipen = 999)
+
 sdmx_name <- "FRB_H8.zip"
 sdmx_url <- "https://www.federalreserve.gov/datadownload/Output.aspx?rel=H8&filetype=zip"
 

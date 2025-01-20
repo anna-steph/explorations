@@ -1,16 +1,16 @@
 ---
 title: "Line item levels and simple differences"
-output: html_document
-
+output:
+  html_document: default
+  pdf_document: default
 params:
-  program_path:     "[path]"
-  date_max:         "20250118"
-  year_lag:         2
-  label_size:       11 # size of chart legend, axis labels
-  title_size:       14 # size of chart titles
-  data:             "monthly_sa" # vals df; intermediate feather file in "data/"
-  meta:             "h8_meta" # meta df; intermediate feather file in "data/"
-
+  program_path: "[path]"
+  date_max:     "20250101"
+  year_lag:     2
+  label_size:   11 # size of chart legend, axis labels
+  title_size:   14 # size of chart title
+  data:         "monthly_sa" # vals df; intermediate feather file in "data/"
+  meta:         "h8_meta" # meta df; intermediate feather file in "data/"
 ---
 
 ```{r setup, include = FALSE}
@@ -58,6 +58,48 @@ last_updated <- file.mtime(paste0(params$program_path,
                                   "/data/", params$data, ".feather")) %>%
   format("%B %d, %Y")
 
+output_plots <- function(line_id) {
+
+  level <- format_df(data,
+                     line_item = line_id,
+                     meta_df = meta) %>%
+              plot_stacked_bar(date_start = date_start,
+                               date_end = date_end,
+                               level_or_change = "levels",
+                               domestic = FALSE,
+                               weekly = FALSE)
+
+  print(level)
+
+  chg <- format_df(data,
+                 line_item = line_id,
+                 meta_df = meta) %>%
+          plot_stacked_bar(date_start = date_start,
+                           date_end = date_end,
+                           level_or_change = "change",
+                           domestic = FALSE,
+                           weekly = FALSE)
+
+  print(chg)
+
+}
+
+lines_to_chart <- c(
+      "1001"
+    , "1002", "1003", "1301", "1302", "1011", "1303", "1304"
+    , "1020"
+    , "1023"
+    , "1026", "1221", "1027", "1220", "3219", "1215", "1216", "1217", "1218"
+    , "1029", "1247", "3248", "1243", "2245"
+    , "3305", "1030", "2310"
+    , "1043"
+    , "1048", "3092", "1047", "3053"
+    , "1151"
+    , "1058", "1072", "1110"
+    , "3094", "1100", "3095"
+    , "1152"
+)
+
 ```
 
 Charts created using seasonally adjusted monthly levels data.  
@@ -70,31 +112,23 @@ Final observation on: `r as_of_date`.
 Source: [Board of Governors of the Federal Reserve System](https://www.federalreserve.gov/releases/h8/current/default.htm).  
 Data release: [H.8 Assets and Liabilities of Commercial Banks in the United States](https://www.federalreserve.gov/datadownload/Choose.aspx?rel=H8). 
 
-Disclaimers: Repo contents do not necessarily reflect the views of the Board of Governors of the Federal Reserve System 
+Disclaimers: Contents do not necessarily reflect the views of the Board of Governors of the Federal Reserve System 
 or any other current or prior employer. All views & errors my own.  
 
-## Charts
 
-### Commercial and Industrial Loans
 
-```{r ci_chg, fig.width = 8, fig.height = 4.5, dev = 'svg', echo = FALSE}
-format_df(data,
-         line_item = "1023",
-         meta_df = meta) %>%
-  plot_stacked_bar(date_start = date_start,
-                   date_end = date_end,
-                   level_or_change = "change",
-                   domestic = FALSE,
-                   weekly = FALSE)
+## Balance sheet line items
+
+```{r, results = 'asis', echo = FALSE}
+for (i in seq_along(lines_to_chart)) {
+
+  cat("\n")
+  cat("### ", unique(meta[meta$item == lines_to_chart[i], ]$short_desc), "\n")
+  output_plots(lines_to_chart[i])
+  cat("\n")
+  cat("\n")
+
+}
+
 ```
 
-```{r ci_levels, fig.width = 8, fig.height = 4.5, dev = 'svg', echo = FALSE}
-format_df(data,
-         line_item = "1023",
-         meta_df = meta) %>%
-  plot_stacked_bar(date_start = date_start,
-                   date_end = date_end,
-                   level_or_change = "levels",
-                   domestic = FALSE,
-                   weekly = FALSE)
-```

@@ -167,12 +167,12 @@ plot_stacked_bar <- function(df, date_start, date_end,
     labs(x = "",
          y = "Billions",
          fill = "",
-         title = paste0(stringr::str_to_title(level_or_change), " in ",
-                        long$desc,
+         title = paste0(long$desc, ", ",
+                        tolower(level_or_change),
                         ", ",
-                        format(min(long$date), "%B %Y"),
+                        format(min(long$date), "%b %Y"),
                         " to ",
-                        format(max(long$date), "%B %Y")
+                        format(max(long$date), "%b %Y")
          )) +
     scale_y_continuous(labels = scales::dollar_format()) +
     scale_x_date(date_labels = "%b %y", date_breaks = "3 months") +
