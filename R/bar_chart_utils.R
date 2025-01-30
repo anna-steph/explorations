@@ -1,14 +1,16 @@
 #' Format df
 #'
-#' Uses libraries: dplyr, tidyr, data.table, stringr
+#' Uses libraries: dplyr, tidyr, data.table, stringr, R/calc_change.R
 #'
 #' @param input_df df
-#' @param group string; line_item var
-#' @param meta_df df; line item desc lookup
+#' @param line_item string; line_item var
+#' @param meta df; line item desc lookup
 #'
 #' @return df, formatted
-format_df <- function(input_df, line_item, meta_df) {
-  
+format_df <- function(input_df,
+                      line_item,
+                      meta = meta) {
+
   set <- input_df %>%
     select(date, contains(line_item)) %>%
     pivot_longer(-date, names_sep = 5, names_to = c("pre", "suff")) %>%
@@ -23,30 +25,22 @@ format_df <- function(input_df, line_item, meta_df) {
       line_item = as.numeric(line_item),
       series_id = toupper(trimws(paste0(pre, suff)))
     ) %>%
-    left_join(meta_df %>% select(series_name, short_desc),
+    left_join(meta %>% select(series_name, short_desc),
               by = c("series_id" = "series_name")) %>%
-    select(line_item, group, desc = short_desc, date, current = value)
+    select(line_item, group, desc = short_desc, series_id, date, current = value)
 
-  dt <- as.data.table(set)
+  change <- calc_change(df = set,
+                        is_long = TRUE,
+                        meta_vars = c("desc", "line_item", "group"))
 
-  lag_vals <- dt[, lag := shift(current, 1, fill = NA, type = "lag"),
-                 by = c("desc", "line_item", "group")]
-
-  chg_vals <- lag_vals[, chg := sum(current, -lag, na.rm = FALSE),
-                       by = seq_len(nrow(lag_vals))]
-
-  return_set <- chg_vals %>%
-    as.data.frame() %>%
-    relocate(desc, line_item)
-
-  return(return_set)
+  return(change)
 
 }
 
 
 #' Plot stacked bar
 #'
-#' Dependencies: dplyr, tidyr, data.table, ggplot2, stringr, scales
+#' Dependencies: dplyr, tidyr, data.table, ggplot2, stringr, scales, RColorBrewer
 #'
 #' Plot colors: https://www.r-bloggers.com/2020/03/how-to-standardize-group-colors-in-data-visualizations-in-r/
 #'
@@ -69,7 +63,7 @@ plot_stacked_bar <- function(df, date_start, date_end,
 
   # balance sheet levels or changes (simple diff)
   var_of_interest <- dplyr::if_else(
-    stringr::str_detect(stringr::str_to_lower(level_or_change), "level"),
+    stringr::str_detect(tolower(level_or_change), "level"),
     "current",
     "chg")
 

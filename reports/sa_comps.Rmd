@@ -1,16 +1,18 @@
 ---
-title: "Line item levels and simple differences"
+title: "Seasonal adjustment comparisons"
 output:
   html_document: default
   pdf_document: default
 params:
   program_path: "[path]"
   date_max:     "20250101"
-  year_lag:     2
+  year_lag:     6
   label_size:   11 # size of chart legend, axis labels
   title_size:   14 # size of chart title
-  data:         "monthly_sa" # vals df; intermediate feather file in "data/"
+  nsa_data:     "monthly_nsa" # nsa vals df; intermediate feather file in "data/"
+  sa_data:      "monthly_sa" # sa vals df; intermediate feather file in "data/"
   meta:         "h8_meta" # meta df; intermediate feather file in "data/"
+
 ---
 
 ```{r setup, include = FALSE}
@@ -36,51 +38,64 @@ date_start <- date_end - lubridate::years(params$year_lag)
 # Load data and meta  ----------------------------------------------------
 
 # Functions
-program_list <- list.files(paste0(params$program_path, "R/"), full.names = T)
+program_list <- list.files(paste0(params$program_path, "R"), full.names = T)
 sapply(program_list, source)
 
-data <- feather::read_feather(paste0(params$program_path,
-                                     "/data/", params$data, ".feather")) %>%
+meta_character <- c("bg", "category", "currency", "h8_units", "sa", "series_name")
+
+nsa_data <- feather::read_feather(paste0(params$program_path,
+                                     "/data/", params$nsa_data, ".feather")) %>%
+  pivot_wider(names_from = series_id, values_from = value)
+
+sa_data <- feather::read_feather(paste0(params$program_path,
+                                     "/data/", params$sa_data, ".feather")) %>%
   pivot_wider(names_from = series_id, values_from = value)
 
 meta <- feather::read_feather(paste0(params$program_path,
-                                     "/data/", params$meta, ".feather"))
+                              "/data/", params$meta, ".feather")) %>%
+  mutate(across(all_of(meta_character), ~ tolower(.x)))
 
 # Ref and updated dates
-as_of_date <- data %>%
+as_of_date <- sa_data %>%
   summarise(max = max(date)) %>%
   pull() %>%
   format("%B %d, %Y")
 
 timestamp <- format(Sys.time(), "%B %d, %Y, %X")
 
-last_updated <- file.mtime(paste0(params$program_path,
-                                  "/data/", params$data, ".feather")) %>%
+nsa_last_updated <- file.mtime(paste0(params$program_path,
+                                  "/data/", params$nsa_data, ".feather")) %>%
+  format("%B %d, %Y")
+
+sa_last_updated <- file.mtime(paste0(params$program_path,
+                                  "/data/", params$sa_data, ".feather")) %>%
   format("%B %d, %Y")
 
 output_plots <- function(line_id) {
 
-  level <- format_df(data,
-                     line_item = line_id,
-                     meta = meta) %>%
-              plot_stacked_bar(date_start = date_start,
-                               date_end = date_end,
-                               level_or_change = "levels",
-                               domestic = FALSE,
-                               weekly = FALSE)
+  sa_level_comps <- format_sa_comps(df1 = nsa_data,
+                                    df2 = sa_data,
+                                    bg = "cb",
+                                    line_item = line_id,
+                                    meta = meta) %>%
+                      plot_sa_line(date_start = date_start,
+                                   date_end = date_end,
+                                   level_or_change = "level",
+                                   weekly = FALSE)
 
-  print(level)
+  print(sa_level_comps)
 
-  chg <- format_df(data,
-                   line_item = line_id,
-                   meta = meta) %>%
-          plot_stacked_bar(date_start = date_start,
-                           date_end = date_end,
-                           level_or_change = "change",
-                           domestic = FALSE,
-                           weekly = FALSE)
+  sa_chg_comps <- format_sa_comps(df1 = nsa_data,
+                                  df2 = sa_data,
+                                  bg = "cb",
+                                  line_item = line_id,
+                                  meta = meta) %>%
+                    plot_sa_line(date_start = date_start,
+                                 date_end = date_end,
+                                 level_or_change = "change",
+                                 weekly = FALSE)
 
-  print(chg)
+  print(sa_chg_comps)
 
 }
 
@@ -102,11 +117,11 @@ lines_to_chart <- c(
 
 ```
 
-Charts created using seasonally adjusted monthly average levels data.  
+Charts created using not seasonally adjusted and seasonally adjusted monthly average levels data.  
 Change defined as current month less prior month.  
 
 **Run at: `r timestamp`**.  
-Data last retrieved: `r last_updated`.  
+Data last retrieved: `r sa_last_updated`.  
 Final observation on: `r as_of_date`.  
 
 Source: [Board of Governors of the Federal Reserve System](https://www.federalreserve.gov/releases/h8/current/default.htm).  
