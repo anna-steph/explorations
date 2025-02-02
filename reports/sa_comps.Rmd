@@ -1,5 +1,4 @@
 ---
-title: "Seasonal adjustment comparisons"
 output:
   html_document: default
   pdf_document: default
@@ -12,10 +11,14 @@ params:
   nsa_data:     "monthly_nsa" # nsa vals df; intermediate feather file in "data/"
   sa_data:      "monthly_sa" # sa vals df; intermediate feather file in "data/"
   meta:         "h8_meta" # meta df; intermediate feather file in "data/"
-
+  bank_group:   "cb" # bank group of analysis, from c("cb", "dm", "lg", "sm", "fr")
+  set_title:    "Seasonal adjustment comps, all commercial banks"
+title:          "`r params$set_title`"
+execute:
+  echo:         FALSE
 ---
 
-```{r setup, include = FALSE}
+```{r setup, include = FALSE, echo = FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 
 # Setup -----------------------------------------------------------------
@@ -75,7 +78,7 @@ output_plots <- function(line_id) {
 
   sa_level_comps <- format_sa_comps(df1 = nsa_data,
                                     df2 = sa_data,
-                                    bg = "cb",
+                                    bg = params$bank_group,
                                     line_item = line_id,
                                     meta = meta) %>%
                       plot_sa_line(date_start = date_start,
@@ -87,7 +90,7 @@ output_plots <- function(line_id) {
 
   sa_chg_comps <- format_sa_comps(df1 = nsa_data,
                                   df2 = sa_data,
-                                  bg = "cb",
+                                  bg = params$bank_group,
                                   line_item = line_id,
                                   meta = meta) %>%
                     plot_sa_line(date_start = date_start,
@@ -134,7 +137,7 @@ or any other current or prior employer. All views & errors my own.
 
 ## Balance sheet line items
 
-```{r, results = 'asis', echo = FALSE}
+```{r, echo = FALSE, results = 'asis'}
 for (i in seq_along(lines_to_chart)) {
 
   cat("\n")

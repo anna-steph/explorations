@@ -64,3 +64,33 @@ meta_shorthand <- function(meta) {
   return(short)
 
 }
+
+
+#' Bank group descs
+#' 
+#' Add short descriptions of bank groups
+#' 
+#' Dependencies: tidyr, dplyr
+#' 
+#' For info about H.8 bank groups, see:
+#' H8 About page: https://www.federalreserve.gov/releases/h8/about.htm
+#' 
+#' @param bg df;
+#' 
+#' @returns df; with short_desc additional field
+bank_group_descs <- function(meta) {
+
+  bgs <- meta %>%
+    mutate(
+      bg_desc = dplyr::case_when(
+        tolower(bg) == "cb" ~ "All commercial banks",
+        tolower(bg) == "dm" ~ "Domestically chartered commercial banks",
+        tolower(bg) == "lg" ~ "Large domestically chartered banks",
+        tolower(bg) == "sm" ~ "Small domestically chartered banks",
+        tolower(bg) == "fr" ~ "Foreign-related institutions"
+      )
+    )
+
+  return(bgs)
+
+}

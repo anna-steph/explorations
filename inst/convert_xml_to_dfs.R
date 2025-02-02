@@ -37,7 +37,8 @@ h8_names <- pull_series_names(pub_file = "data/H8_data.xml") %>%
 # metadata
 h8_meta <- pull_pub_meta(pub_file = "data/H8_data.xml") %>%
   left_join(h8_names, by = c("order", "series_name")) %>%
-  meta_shorthand()
+  meta_shorthand() %>%
+  bank_group_descs()
 
 # Save --------------------------------------------------------------
 
