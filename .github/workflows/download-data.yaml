@@ -1,0 +1,47 @@
+on:
+  schedule:
+    #- cron: '18 16 * * 5'
+    - cron: '35 11 * * 2' #test
+    
+jobs:
+  import-data:
+    runs-on: ubuntu-latest
+    defaults:
+      run: 
+        working-directory: repo
+    steps:
+      - name: set up R env
+        uses: r-lib/actions/setup-r@v2
+        
+      - name: install packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::tidyverse
+            any::xml2
+            any::httr
+            any::feather
+            any::data.table
+            any::dtplyr
+            any::RColorBrewer
+            any::scales
+            any::rmarkdown
+
+      - name: check out repository
+        uses: actions/checkout@v3
+
+      - name: download data
+        run:  Rscript inst/convert_xml_to_dfs.R .
+
+      - name: run reports
+        run:  Rscript inst/run_reports.R .
+
+      - name: commit reports
+        run:  |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add reports/sa_comps.html
+          git add reports/simple_diffs.html
+          git commit -m 'data updated' || echo "No changes to commit"
+          git push origin main || echo "No changes to commit"
+

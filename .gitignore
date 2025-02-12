@@ -1,6 +1,6 @@
-# ignore
 # borrowed from https://github.com/github/gitignore/blob/main/R.gitignore
 
+# ignore
 .DS_Store
 
 *.csv
@@ -9,6 +9,10 @@
 *.zip
 *.feather
 *.html
+
+# allow select reports
+!reports/sa_comps.html
+!reports/simple_diffs.html
 
 Rlibrary/
 working/

@@ -1,7 +1,16 @@
 # Download, format, and save data
 # Data saved in intermediate feather files for ease of use
 
-download_path <- "[path]"
+args <- commandArgs(trailingOnly = TRUE)
+
+if (length(args) == 0) {
+  message("Missing project filepath")
+  stop("Project filepath missing")
+}
+
+proj_path <- args[1]
+setwd(proj_path)
+download_path <- paste0(proj_path, "/data/")
 
 # Setup -----------------------------------------------------------------
 
