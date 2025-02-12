@@ -1,7 +1,9 @@
+name: Download data and update charts
+
 on:
   schedule:
     #- cron: '18 16 * * 5'
-    - cron: '35 11 * * 2' #test
+    - cron: '50 4 * * 3' #test
     
 jobs:
   import-data:
@@ -38,6 +40,7 @@ jobs:
 
       - name: commit reports
         run:  |
+          echo "running"
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add reports/sa_comps.html
