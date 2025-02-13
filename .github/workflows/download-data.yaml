@@ -1,10 +1,12 @@
 name: Download data and update charts
 
 on:
-  schedule:
+  push:
+    branches: main
+  #schedule:
     #- cron: '18 21 * * 5' GitHub Actions runs on UTC
-    - cron: '*/20 * * * *' #test
-    
+    #- cron: '*/20 * * * *' #test
+
 jobs:
   import-data:
     runs-on: ubuntu-latest
@@ -46,10 +48,13 @@ jobs:
         run:  |
           echo "running"
           cd /home/runner/work/explorations
+          git config --local user.name github-actions
           git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
           git add reports/sa_comps.html
           git add reports/simple_diffs.html
-          git commit -m 'data updated' || echo "No changes to commit"
-          git push origin main || echo "No changes to commit"
+          git commit -m 'data updated'
+          git push origin main
+        env:
+          REPO_KEY: ${{secrets.GITHUB_TOKEN}}
+          username: github-actions
 
