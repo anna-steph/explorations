@@ -29,7 +29,7 @@ sapply(pgm_list, source)
 
 # Download and convert -------------------------------------------------
 
-download.file(sdmx_url, paste0(download_path, sdmx_name), mode = "wb")
+download.file(sdmx_url, paste0(download_path, sdmx_name), mode = "wget")
 
 # unzip SDMX xml file
 unzip_call <- paste0("unzip -o data/FRB_H8.zip 'H8_data.xml' -d data")

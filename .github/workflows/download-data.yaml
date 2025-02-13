@@ -7,6 +7,8 @@ on:
     #- cron: '18 21 * * 5' GitHub Actions runs on UTC
     #- cron: '*/20 * * * *' #test
 
+permissions: write
+
 jobs:
   import-data:
     runs-on: ubuntu-latest
