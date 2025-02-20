@@ -44,6 +44,8 @@ jobs:
 
       - name: download data
         run:  |
+          zip ./data/FRB_H8.zip anyfile
+          zip -d ./data/FRB_H8.zip anyfile
           #cd /home/runner/work/explorations/explorations/
           #Rscript inst/convert_xml_to_dfs.R /home/runner/work/explorations/explorations/
           Rscript inst/convert_xml_to_dfs.R .
