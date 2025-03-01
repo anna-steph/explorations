@@ -10,10 +10,6 @@
 *.feather
 *.html
 
-# allow select reports
-!reports/sa_comps.html
-!reports/simple_diffs.html
-
 Rlibrary/
 working/
 .Rprofile
