@@ -1,14 +1,13 @@
-name: Download data and update charts
+name: Download data and run charts
 
 on:
   push:
     branches: main
   #schedule:
     #- cron: '18 21 * * 5' GitHub Actions runs on UTC
-    #- cron: '*/20 * * * *' #test
-
-permissions:
-  contents: write
+  
+  # run manually from Actions
+  workflow_dispatch:
 
 jobs:
   import-data:
@@ -41,32 +40,26 @@ jobs:
 
       - name: check out repository
         uses: actions/checkout@v3
+        
+      - uses: r-lib/actions/setup-pandoc@v2
 
       - name: download data
         run:  |
           zip ./data/FRB_H8.zip anyfile
           zip -d ./data/FRB_H8.zip anyfile
-          #cd /home/runner/work/explorations/explorations/
           #Rscript inst/convert_xml_to_dfs.R /home/runner/work/explorations/explorations/
           Rscript inst/convert_xml_to_dfs.R .
 
       - name: run reports
         run:  |
-          #cd /home/runner/work/explorations/explorations/
           #Rscript inst/run_reports.R /home/runner/work/explorations/explorations/
-          Rscript inst/run_reports.R .
-
-      - name: commit reports
-        run:  |
-          echo "running"
-          #cd /home/runner/work/explorations/explorations/
-          git config --local user.name github-actions
-          git config --local user.email "actions@github.com"
-          git add reports/sa_comps.html
-          git add reports/simple_diffs.html
-          git commit -m 'data updated'
-          git push origin main
-        env:
-          REPO_KEY: ${{secrets.GITHUB_TOKEN}}
-          username: github-actions
-
+          Rscript -e 'rmarkdown::render(input = "reports/simple_diffs.Rmd",
+                                        params = list(
+                                          program_path = /home/runner/work/explorations/explorations/R/,
+                                          date_max = Sys.Date() - 7
+                                        ))'
+          Rscript -e 'rmarkdown::render(input = "reports/sa_comps.Rmd",
+                                        params = list(
+                                          program_path = /home/runner/work/explorations/explorations/R/,
+                                          date_max = Sys.Date() - 7
+                                        ))'
