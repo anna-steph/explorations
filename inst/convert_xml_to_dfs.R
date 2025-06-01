@@ -1,16 +1,23 @@
 # Download, format, and save data
 # Data saved in intermediate feather files for ease of use
 
-args <- commandArgs(trailingOnly = TRUE)
+# args <- commandArgs(trailingOnly = TRUE)
+# 
+# if (length(args) == 0) {
+#   message("Missing project filepath")
+#   stop("Project filepath missing")
+# }
+# 
+# proj_path <- args[1]
+# setwd(proj_path)
+# download_path <- paste0(proj_path, "/data/")
 
-if (length(args) == 0) {
-  message("Missing project filepath")
-  stop("Project filepath missing")
-}
+# Set paths -----------------------------------------------------------------
 
-proj_path <- args[1]
-setwd(proj_path)
-download_path <- paste0(proj_path, "/data/")
+library(rmarkdown)
+library(here)
+proj_path <- here::here()
+download_path <- here("data")
 
 # Setup -----------------------------------------------------------------
 
@@ -24,7 +31,7 @@ sdmx_url <- "https://www.federalreserve.gov/datadownload/Output.aspx?rel=H8&file
 dependencies <- c("dplyr", "tidyr", "xml2", "stringr", "purrr", "httr", "feather")
 lapply(dependencies, library, character.only = T)
 
-pgm_list <- list.files("R", full.names = T)
+pgm_list <- list.files(here("R"), full.names = T)
 sapply(pgm_list, source)
 
 # Download and convert -------------------------------------------------

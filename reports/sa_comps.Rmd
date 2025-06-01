@@ -31,6 +31,7 @@ library(ggplot2)
 library(data.table)
 library(dtplyr)
 library(feather)
+library(here)
 
 options(scipen = 999)
 
@@ -41,21 +42,18 @@ date_start <- date_end - lubridate::years(params$year_lag)
 # Load data and meta  ----------------------------------------------------
 
 # Functions
-program_list <- list.files(paste0(params$program_path, "R"), full.names = T)
+program_list <- list.files(here("R"), full.names = T)
 sapply(program_list, source)
 
 meta_character <- c("bg", "category", "currency", "h8_units", "sa", "series_name")
 
-nsa_data <- feather::read_feather(paste0(params$program_path,
-                                     "/data/", params$nsa_data, ".feather")) %>%
+nsa_data <- feather::read_feather(here("data", paste0(params$nsa_data, ".feather"))) %>%
   pivot_wider(names_from = series_id, values_from = value)
 
-sa_data <- feather::read_feather(paste0(params$program_path,
-                                     "/data/", params$sa_data, ".feather")) %>%
+sa_data <- feather::read_feather(here("data", paste0(params$sa_data, ".feather"))) %>%
   pivot_wider(names_from = series_id, values_from = value)
 
-meta <- feather::read_feather(paste0(params$program_path,
-                              "/data/", params$meta, ".feather")) %>%
+meta <- feather::read_feather(here("data", paste0(params$meta, ".feather"))) %>%
   mutate(across(all_of(meta_character), ~ tolower(.x)))
 
 # Ref and updated dates
@@ -66,12 +64,10 @@ as_of_date <- sa_data %>%
 
 timestamp <- format(Sys.time(), "%B %d, %Y, %X")
 
-nsa_last_updated <- file.mtime(paste0(params$program_path,
-                                  "/data/", params$nsa_data, ".feather")) %>%
+nsa_last_updated <- file.mtime(here("data", paste0(params$nsa_data, ".feather"))) %>%
   format("%B %d, %Y")
 
-sa_last_updated <- file.mtime(paste0(params$program_path,
-                                  "/data/", params$sa_data, ".feather")) %>%
+sa_last_updated <- file.mtime(here("data", paste0(params$sa_data, ".feather"))) %>%
   format("%B %d, %Y")
 
 output_plots <- function(line_id) {
@@ -137,7 +133,7 @@ or any other current or prior employer. All views & errors my own.
 
 ## Balance sheet line items
 
-```{r, echo = FALSE, results = 'asis'}
+```{r chart_unroll, echo = FALSE, results = 'asis'}
 for (i in seq_along(lines_to_chart)) {
 
   cat("\n")
@@ -149,4 +145,3 @@ for (i in seq_along(lines_to_chart)) {
 }
 
 ```
-

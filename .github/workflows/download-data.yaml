@@ -37,6 +37,7 @@ jobs:
             any::RColorBrewer
             any::scales
             any::rmarkdown
+            any::here
 
       - name: check out repository
         uses: actions/checkout@v3
@@ -44,22 +45,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - name: download data
-        run:  |
-          zip ./data/FRB_H8.zip anyfile
-          zip -d ./data/FRB_H8.zip anyfile
-          #Rscript inst/convert_xml_to_dfs.R /home/runner/work/explorations/explorations/
-          Rscript inst/convert_xml_to_dfs.R .
+        run:  Rscript inst/convert_xml_to_dfs.R
 
       - name: run reports
-        run:  |
-          #Rscript inst/run_reports.R /home/runner/work/explorations/explorations/
-          Rscript -e 'rmarkdown::render(input = "reports/simple_diffs.Rmd",
-                                        params = list(
-                                          program_path = /home/runner/work/explorations/explorations/R/,
-                                          date_max = Sys.Date() - 7
-                                        ))'
-          Rscript -e 'rmarkdown::render(input = "reports/sa_comps.Rmd",
-                                        params = list(
-                                          program_path = /home/runner/work/explorations/explorations/R/,
-                                          date_max = Sys.Date() - 7
-                                        ))'
+        run:  Rscript inst/run_reports.R

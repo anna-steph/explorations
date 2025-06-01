@@ -26,6 +26,7 @@ library(ggplot2)
 library(data.table)
 library(dtplyr)
 library(feather)
+library(here)
 
 options(scipen = 999)
 
@@ -36,15 +37,13 @@ date_start <- date_end - lubridate::years(params$year_lag)
 # Load data and meta  ----------------------------------------------------
 
 # Functions
-program_list <- list.files(paste0(params$program_path, "R/"), full.names = T)
+program_list <- list.files(here("R"), full.names = T)
 sapply(program_list, source)
 
-data <- feather::read_feather(paste0(params$program_path,
-                                     "/data/", params$data, ".feather")) %>%
+data <- feather::read_feather(here("data", paste0(params$data, ".feather"))) %>%
   pivot_wider(names_from = series_id, values_from = value)
 
-meta <- feather::read_feather(paste0(params$program_path,
-                                     "/data/", params$meta, ".feather"))
+meta <- feather::read_feather(here("data", paste0(params$meta, ".feather")))
 
 # Ref and updated dates
 as_of_date <- data %>%
@@ -54,8 +53,7 @@ as_of_date <- data %>%
 
 timestamp <- format(Sys.time(), "%B %d, %Y, %X")
 
-last_updated <- file.mtime(paste0(params$program_path,
-                                  "/data/", params$data, ".feather")) %>%
+last_updated <- file.mtime(here("data", paste0(params$data, ".feather"))) %>%
   format("%B %d, %Y")
 
 output_plots <- function(line_id) {
@@ -119,7 +117,7 @@ or any other current or prior employer. All views & errors my own.
 
 ## Balance sheet line items
 
-```{r, results = 'asis', echo = FALSE}
+```{r chart_unroll, results = 'asis', echo = FALSE, dev = 'svg'}
 for (i in seq_along(lines_to_chart)) {
 
   cat("\n")
@@ -131,4 +129,3 @@ for (i in seq_along(lines_to_chart)) {
 }
 
 ```
-
