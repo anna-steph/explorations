@@ -52,7 +52,9 @@ jobs:
         run: file /home/runner/work/explorations/explorations/data/FRB_H8.zip
         
       - name: unzip
-        run: unzip -o "/home/runner/work/explorations/explorations/data/FRB_H8.zip" -d "/home/runner/work/explorations/explorations/data/"
+        run: |
+          cd /home/runner/work/explorations/explorations/data/
+          unzip -o FRB_H8.zip 'H8_data.xml'
       
       - name: convert data to intermediate files
         run: Rscript inst/convert_xml_to_dfs.R

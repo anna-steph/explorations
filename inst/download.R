@@ -25,5 +25,7 @@ sapply(pgm_list, source)
 
 # Download and convert -------------------------------------------------
 
-download.file(sdmx_url, paste0(download_path, sdmx_name))
+download_path <- paste0(here("data"), "/", sdmx_name)
+
+download.file(sdmx_url, download_path)
 
