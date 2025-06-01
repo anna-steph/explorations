@@ -17,7 +17,7 @@ jobs:
         working-directory: ${{ github.workspace }}
 
     env:
-      REPO_DIR: $HOME/work/explorations/explorations/
+      REPO_DIR: $HOME/work/explorations/explorations
 
     steps:
       - name: set up R env
