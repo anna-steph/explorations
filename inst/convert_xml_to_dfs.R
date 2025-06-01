@@ -1,16 +1,5 @@
-# Download, format, and save data
+# Format and save data
 # Data saved in intermediate feather files for ease of use
-
-# args <- commandArgs(trailingOnly = TRUE)
-# 
-# if (length(args) == 0) {
-#   message("Missing project filepath")
-#   stop("Project filepath missing")
-# }
-# 
-# proj_path <- args[1]
-# setwd(proj_path)
-# download_path <- paste0(proj_path, "/data/")
 
 # Set paths -----------------------------------------------------------------
 
@@ -34,13 +23,11 @@ lapply(dependencies, library, character.only = T)
 pgm_list <- list.files(here("R"), full.names = T)
 sapply(pgm_list, source)
 
-# Download and convert -------------------------------------------------
-
-download.file(sdmx_url, paste0(download_path, sdmx_name))
+# Convert -------------------------------------------------
 
 # unzip SDMX xml file
-unzip_call <- paste0("unzip -o ", here("data", "FRB_H8.zip"), " 'H8_data.xml' -d ", here("data"))
-system(unzip_call)
+# unzip_call <- paste0("unzip -o ", here("data", "FRB_H8.zip"), " 'H8_data.xml' -d ", here("data"))
+# system(unzip_call)
 
 # loops below take a couple minutes
 # convert xml vals to df list

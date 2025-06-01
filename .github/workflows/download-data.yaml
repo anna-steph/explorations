@@ -46,7 +46,16 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - name: download data
-        run:  Rscript inst/convert_xml_to_dfs.R
+        run: Rscript inst/download.R
+        
+      - name: check download
+        run: file /home/runner/work/explorations/explorations/data/FRB_H8.zip
+        
+      - name: unzip
+        run: unzip -o "/home/runner/work/explorations/explorations/data/FRB_H8.zip" -d "/home/runner/work/explorations/explorations/data/"
+      
+      - name: convert data to intermediate files
+        run: Rscript inst/convert_xml_to_dfs.R
 
       - name: run reports
-        run:  Rscript inst/run_reports.R
+        run: Rscript inst/run_reports.R
