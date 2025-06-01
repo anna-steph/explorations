@@ -46,7 +46,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - name: download data
-        run: Rscript inst/download.R
+        run: curl -o /home/runner/work/explorations/explorations/data/FRB_H8.zip "https://www.federalreserve.gov/datadownload/Output.aspx?rel=H8&filetype=zip"
         
       - name: check download
         run: file /home/runner/work/explorations/explorations/data/FRB_H8.zip
@@ -58,6 +58,9 @@ jobs:
       
       - name: convert data to intermediate files
         run: Rscript inst/convert_xml_to_dfs.R
+        
+      - name: check intermediate files
+        run: ls -alt data/
 
       - name: run reports
         run: Rscript inst/run_reports.R

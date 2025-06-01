@@ -25,10 +25,6 @@ sapply(pgm_list, source)
 
 # Convert -------------------------------------------------
 
-# unzip SDMX xml file
-# unzip_call <- paste0("unzip -o ", here("data", "FRB_H8.zip"), " 'H8_data.xml' -d ", here("data"))
-# system(unzip_call)
-
 # loops below take a couple minutes
 # convert xml vals to df list
 h8_sdmx <- pull_pub_vals(pub_file = here("data", "H8_data.xml"))
@@ -50,10 +46,10 @@ intermediate_df_list <- names(h8_sdmx)
 
 for (i in seq_along(intermediate_df_list)) {
   feather::write_feather(h8_sdmx[[i]],
-                         path = paste0(download_path, intermediate_df_list[i], ".feather"))
+                         path = paste0(here("data"), "/", intermediate_df_list[i], ".feather"))
 }
 
 feather::write_feather(h8_meta,
-                       path = paste0(download_path, "h8_meta.feather"))
+                       path = paste0(here("data"), "/", "h8_meta.feather"))
 
 message(paste0("Total time elapsed: ", Sys.time() - time_start))
