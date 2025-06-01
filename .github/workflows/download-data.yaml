@@ -15,6 +15,10 @@ jobs:
     defaults:
       run: 
         working-directory: ${{ github.workspace }}
+
+    env:
+      REPO_DIR: $HOME/work/explorations/explorations/
+
     steps:
       - name: set up R env
         uses: r-lib/actions/setup-r@v2
@@ -46,14 +50,14 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - name: download data
-        run: curl -o /home/runner/work/explorations/explorations/data/FRB_H8.zip "https://www.federalreserve.gov/datadownload/Output.aspx?rel=H8&filetype=zip"
+        run: curl -o $REPO_DIR/data/FRB_H8.zip "https://www.federalreserve.gov/datadownload/Output.aspx?rel=H8&filetype=zip"
         
       - name: check download
-        run: file /home/runner/work/explorations/explorations/data/FRB_H8.zip
+        run: file $REPO_DIR/data/FRB_H8.zip
         
       - name: unzip
         run: |
-          cd /home/runner/work/explorations/explorations/data/
+          cd $REPO_DIR/data/
           unzip -o FRB_H8.zip 'H8_data.xml'
       
       - name: convert data to intermediate files
@@ -64,3 +68,12 @@ jobs:
 
       - name: run reports
         run: Rscript inst/run_reports.R
+      
+      - name: commit and push changes
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add reports/*.html
+          git commit -m 'Recurring report update'
+          git push origin main
+
