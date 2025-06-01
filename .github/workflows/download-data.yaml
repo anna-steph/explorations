@@ -38,6 +38,7 @@ jobs:
             any::scales
             any::rmarkdown
             any::here
+            any::xfun
 
       - name: check out repository
         uses: actions/checkout@v3

@@ -39,19 +39,19 @@ sapply(pgm_list, source)
 download.file(sdmx_url, paste0(download_path, sdmx_name))
 
 # unzip SDMX xml file
-unzip_call <- paste0("unzip -o data/FRB_H8.zip 'H8_data.xml' -d data")
+unzip_call <- paste0("unzip -o ", here("data", "FRB_H8.zip"), " 'H8_data.xml' -d ", here("data"))
 system(unzip_call)
 
 # loops below take a couple minutes
 # convert xml vals to df list
-h8_sdmx <- pull_pub_vals(pub_file = "data/H8_data.xml")
+h8_sdmx <- pull_pub_vals(pub_file = here("data", "H8_data.xml"))
 
 # names
-h8_names <- pull_series_names(pub_file = "data/H8_data.xml") %>%
+h8_names <- pull_series_names(pub_file = here("data", "H8_data.xml")) %>%
   bind_rows()
 
 # metadata
-h8_meta <- pull_pub_meta(pub_file = "data/H8_data.xml") %>%
+h8_meta <- pull_pub_meta(pub_file = here("data", "H8_data.xml")) %>%
   left_join(h8_names, by = c("order", "series_name")) %>%
   meta_shorthand() %>%
   bank_group_descs()
