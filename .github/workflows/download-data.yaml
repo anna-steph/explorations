@@ -1,10 +1,10 @@
-name: Download data and run charts
+name: Download data updates and run charts
 
 on:
   push:
     branches: main
-  #schedule:
-    #- cron: '18 21 * * 5' GitHub Actions runs on UTC
+  schedule:
+    - cron: '20 20 * * 5' # GitHub Actions runs on UTC
   
   # run manually from Actions
   workflow_dispatch:
@@ -65,12 +65,4 @@ jobs:
 
       - name: run reports
         run: Rscript inst/run_reports.R
-      
-      - name: commit and push changes
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git add -f reports/*.html
-          git commit -m 'Recurring report update'
-          git push origin main
 

@@ -10,10 +10,6 @@
 *.feather
 *.html
 
-# except the following files
-!reports/simple_diffs.html
-!reports/sa_comps.html
-
 Rlibrary/
 working/
 .Rprofile
